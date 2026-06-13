@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "251929640964",
+    "project_id": "pivaldi-mobile-app",
+    "storage_bucket": "pivaldi-mobile-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251929640964:android:38e4753a17e33d1a9bb551",
+        "android_client_info": {
+          "package_name": "com.pivaldi.kafpliz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6ep6EU_CGm1WcdunM4jzpqy5MBnYOV68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

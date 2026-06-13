@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "Pivaldi - Фантастический ресторан",
+    "slug": "pivaldi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "pivaldi",
+    "newArchEnabled": true,
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "predictiveBackGestureEnabled": false,
+      "package": "com.pivaldi.kafpliz",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash/splash.png",
+          "backgroundColor": "#e0a275",
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-secure-store",
+      "expo-video",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "default",
+          "icon": "./assets/images/push_icon.png"
+        }
+      ]
+    ],
+    
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "73c431d8-eee8-4cb0-bf5a-1a1187aa8c7a"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/73c431d8-eee8-4cb0-bf5a-1a1187aa8c7a"
+    }
+  }
+}
