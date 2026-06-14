@@ -15,7 +15,7 @@ const Header = () => {
     
       
     return (
-    <View className="w-full min-h-[70px] flex-row  justify-between items-center pl-5 pr-5 z-10 bg-primary-comp" 
+    <View className="w-full min-h-[70px] flex-row justify-between items-center px-5 z-10 bg-primary-comp" 
     style={{
         boxShadow: `0px 4px 4px 0px rgba(0, 0, 0, 0.25)`,
         paddingTop: insets.top
@@ -23,10 +23,19 @@ const Header = () => {
    >
 
         <StatusBar barStyle={isDark? 'light-content': "dark-content"} />
-        <Image source={isDark ? img.logoHeaderLight : img.logoHeaderDark}  contentFit="cover" style={{width: 130, height: 30 }} className="border"
-        onError={(e:any) => console.log('LOAD ERROR:', e.nativeEvent.error)}
-        onLoadEnd={()=> console.log('HEADER LOADED')} />
-   
+        <Image 
+            source={isDark ? img.logoHeaderLight : img.logoHeaderDark}  
+            contentFit="contain" 
+            style={{ 
+                width: '35%', 
+                maxWidth: 180,
+                height: undefined,
+                aspectRatio: 4.33 // 130:30 = 4.33
+            }} 
+            onError={(e:any) => console.log('LOAD ERROR:', e.nativeEvent.error)}
+            onLoadEnd={()=> console.log('HEADER LOADED')} 
+        />
+    
     </View>)
 }
 

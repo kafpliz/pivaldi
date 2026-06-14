@@ -114,7 +114,7 @@ const Content = ({ data }: { data: IResto }) => {
 
     return (
         <View className="flex-1 gap-6">
-                    
+
             <TouchableOpacity className="w-full p-5 justify-center items-center rounded-xl bg-active"
                 onPress={() => router.push({
                     pathname: '/(tabs)/(home)/tour/tour',
@@ -129,13 +129,13 @@ const Content = ({ data }: { data: IResto }) => {
                 }} >{t('addresses.tour')}</StyledText>
             </TouchableOpacity>
 
-            <TouchableOpacity className="w-full p-5 justify-center items-center rounded-xl gap-2"
+            <View className="w-full p-5 justify-center items-center rounded-xl gap-2"
                 style={{
                     borderWidth: 2,
-                    borderColor:'rgba(67, 48, 19, 1)',
+                    borderColor: 'rgba(67, 48, 19, 1)',
                     position: 'relative'
                 }}
-                onPress={async () => handleTouch(addres)}>
+            >
 
                 <StyledText className="text-primary" fontFamily='berlin' style={{
                     fontSize: 20,
@@ -148,12 +148,17 @@ const Content = ({ data }: { data: IResto }) => {
                     textAlign: 'center',
                     color: isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(109, 94, 73, 1)'
                 }} >{addres}</StyledText>
-                <Image source={icons.copy} contentFit="cover" style={{
-                    width: 18, height: 18,
-                     position: 'absolute',
-                     top: 11, right: 11
-                }} />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={async () => handleTouch(addres)} style={{
+                      position: 'absolute',
+                        top: 11, right: 11
+                }} >
+                    <Image source={icons.copy} contentFit="cover" style={{
+                        width: 24, height: 24,
+                      
+                    }} />
+                </TouchableOpacity>
+
+            </View>
 
             {workHours.length > 0 && (
                 <View className="w-full p-5 justify-center items-center rounded-xl" style={{
@@ -206,7 +211,7 @@ const Content = ({ data }: { data: IResto }) => {
                     color: isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(109, 94, 73, 1)'
                 }} >{phone}</StyledText>
             </TouchableOpacity>
-    
+
         </View>
     )
 }
@@ -325,7 +330,7 @@ const TourList = () => {
                         const isExpanded = expandedResto === item.id
                         return (
                             <View key={idx} className="w-[365px]">
-                              
+
                                 <TouchableOpacity
                                     className="h-20 justify-center items-center rounded-xl bg-primary-btn relative"
                                     style={isDark ? undefined : { boxShadow }}
@@ -344,7 +349,7 @@ const TourList = () => {
                                     <View className="mt-3">
                                         <Content data={item} />
                                     </View>
-                               </AccordionContent>
+                                </AccordionContent>
                             </View>
                         )
                     })

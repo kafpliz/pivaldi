@@ -37,7 +37,7 @@ export const themeVars = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-    const systemColorScheme = useColorScheme()
+
     const [currentTheme, setCurrentTheme] = useState<ThemeMode>('dark')
 
     useEffect(() => {
@@ -55,9 +55,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
         } catch (error) {
             console.log(error);
-
+            setCurrentTheme( 'dark');
         }
     }
+
 
     const toggleTheme = async () => {
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';

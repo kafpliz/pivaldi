@@ -100,40 +100,42 @@ const CustomImage = ({ uri, type, children, border = 0, style = {}, contentFit =
                             onPress={handleModal}
                         >
                     
-                            <TouchableOpacity
-                                style={{
-                                    width: 48,
-                                    height: 48,
-                                    position: 'absolute',
-                                    top: top + 10,
-                                    right: 10,
-                                    zIndex: 10
-                                }}
-                                onPress={handleModal}
-                                activeOpacity={0.7}
-                            >
-                                <Image
-                                    source={icons.cross}
-                                    style={{ width: '100%', height: '100%' }}
-                                    contentFit="fill"
-                                />
-                            </TouchableOpacity>
+                             <TouchableOpacity
+                                 style={{
+                                     width: '8%',
+                                     maxWidth: 48,
+                                     aspectRatio: 1,
+                                     position: 'absolute',
+                                     top: top + 10,
+                                     right: '3%',
+                                     zIndex: 10
+                                 }}
+                                 onPress={handleModal}
+                                 activeOpacity={0.7}
+                             >
+                                 <Image
+                                     source={icons.cross}
+                                     style={{ width: '100%', height: '100%' }}
+                                     contentFit="fill"
+                                 />
+                             </TouchableOpacity>
 
-                         
-                            <View
-                    style={{
-                        width: '90%',
-                        height: '90%',
-                        borderRadius: 10,
-                        overflow: 'hidden'
-                    }}
-                >
-                    <Image
-                        source={{ uri }}
-                        style={{ width: '100%', height: '100%', borderRadius: 10 }}
-                        contentFit="contain"
-                    />
-                </View>
+                          
+                             <View
+                     style={{
+                         width: '95%',
+                         maxWidth: 600,
+                         height: '85%',
+                         borderRadius: 10,
+                         overflow: 'hidden'
+                     }}
+                 >
+                     <Image
+                         source={{ uri }}
+                         style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                         contentFit="contain"
+                     />
+                 </View>
 
                         </TouchableOpacity>
 
