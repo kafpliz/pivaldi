@@ -72,12 +72,12 @@ const Tabs = ({ data, activeTab, onTabChange, }: { data: ICategory[], activeTab:
                 renderItem={({ item, index }) => (
                     <TouchableOpacity
                         onPress={() => handleTab(item.id)}
-                        className="w-fit max-w-24 pl-6 pr-6 h-10 justify-center items-center rounded-xl"
+                        className="w-fit min-w-24 pl-6 pr-6 h-10 justify-center items-center rounded-xl"
                         style={{
                             backgroundColor: item.id == activeTab ? 'rgba(142, 116, 79, 1)' : undefined,
                         }}
                     >
-                        <StyledText fontFamily="berlin" numberOfLines={2} style={{
+                        <StyledText fontFamily="berlin" numberOfLines={2}  style={{
                             fontSize: 11, fontWeight: 400, color: 'rgba(248, 244, 235, 1)', textAlign: 'center'
                         }}>{transformFirstLetter(item.name)}</StyledText>
                     </TouchableOpacity>

@@ -30,7 +30,7 @@ const StyledText = ({ children, className, style, numberOfLines = undefined, fon
 
 
   return (
-    <Text style={[styles.text, { fontFamily: getFontFamily() }, style]} className={[textColor, className].join(' ')} numberOfLines={numberOfLines}>
+    <Text style={[styles.text, { fontFamily: getFontFamily() }, style]} className={[textColor, className].join(' ')} numberOfLines={numberOfLines} allowFontScaling={false} textBreakStrategy={'simple'} >
       {children}
     </Text>
   )
@@ -39,7 +39,7 @@ const StyledText = ({ children, className, style, numberOfLines = undefined, fon
 const styles = StyleSheet.create({
   text: {
     fontSize: 24,
-
+    
   },
 
 })
