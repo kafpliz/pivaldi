@@ -36,11 +36,11 @@ const Block = ({ first, second, first_bg, second_bg, onPress, onPressSecond }: {
     <View className="flex-row gap-2 w-full h-[120px]">
 
       <TouchableOpacity className={["flex-1 justify-center items-center rounded-xl", first_bg].join(' ')} onPress={onPress}>
-        <StyledText fontFamily={"roboto"} style={{ fontSize: 22, fontWeight: 700 }} className="text-white text-center" >{first}</StyledText>
+        <StyledText style={{ fontSize: 22, fontWeight: 700 }} className="text-white text-center" >{first}</StyledText>
       </TouchableOpacity>
 
       <TouchableOpacity className={["flex-1  justify-center items-center rounded-xl", second_bg].join(' ')} onPress={onPressSecond}>
-        <StyledText fontFamily={"roboto"} style={{ fontSize: 22, fontWeight: 700 }} className="text-white text-center" >{second}</StyledText>
+        <StyledText  style={{ fontSize: 22, fontWeight: 700 }} className="text-white text-center" >{second}</StyledText>
       </TouchableOpacity>
     </View>
   )
@@ -83,25 +83,25 @@ export default function Index() {
             first_bg="bg-home-block-1" second_bg="bg-home-block-2" />
 
           <TouchableOpacity className="w-full h-[80px]  bg-home-btns rounded-xl  justify-center items-center" style={{ boxShadow }} onPress={() => router.push('/(tabs)/(home)/booking/bookingList')} >
-            <StyledText fontFamily={'arial'} style={{ fontSize: 24, fontWeight: 700 }} className="text-home-btns text-center">{t('home.booking')}</StyledText>
+            <StyledText  style={{ fontSize: 24, fontWeight: 700 }} className="text-home-btns text-center">{t('home.booking')}</StyledText>
           </TouchableOpacity>
 
           <Block first={t('home.deliveryPickup')} second={t('home.threeDTours')} onPress={() => router.push('/(tabs)/(home)/delivery/deliveryList')} onPressSecond={() => router.push('/(tabs)/(home)/tour/tourList')}
             first_bg="bg-home-block-2" second_bg="bg-home-block-1" />
 
           <TouchableOpacity className="w-full h-[50px] bg-white rounded-xl  justify-center items-center" style={{ boxShadow }} onPress={() => router.push('/(tabs)/(home)/franchise')}>
-            <StyledText fontFamily={'arial'} style={{ fontSize: 20, fontWeight: 700 }} className="text-home-btns text-center">{t('home.franchising')}</StyledText>
+            <StyledText  style={{ fontSize: 20, fontWeight: 700 }} className="text-home-btns text-center">{t('home.franchising')}</StyledText>
           </TouchableOpacity>
 
           <Links />
 
           <TouchableOpacity className="w-full h-[40px]  bg-home-btns rounded-xl  justify-center items-center" style={{ boxShadow }} onPress={() => router.push('/(tabs)/(home)/affiches/affiches')} >
-            <StyledText fontFamily={'arial'} style={{ fontSize: 24, fontWeight: 700 }} className="text-home-btns text-center">{t('home.affiche')}</StyledText>
+            <StyledText   style={{ fontSize: 24, fontWeight: 700 }} className="text-home-btns text-center">{t('home.affiche')}</StyledText>
           </TouchableOpacity>
 
             <TouchableOpacity className="w-full h-[40px]  bg-home-btns rounded-xl  justify-center items-center" style={{ boxShadow }} 
             onPress={() => router.push('/(tabs)/(home)/vacancies')} >
-            <StyledText fontFamily={'arial'} style={{ fontSize: 24, fontWeight: 700 }} className="text-home-btns text-center">{t('profile.vacancies')}</StyledText>
+            <StyledText  style={{ fontSize: 24, fontWeight: 700 }} className="text-home-btns text-center">{t('profile.vacancies')}</StyledText>
           </TouchableOpacity>
 
         </View>

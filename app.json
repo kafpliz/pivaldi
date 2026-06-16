@@ -9,14 +9,16 @@
     "newArchEnabled": true,
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pivaldi.kafpliz",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "predictiveBackGestureEnabled": false,
       "package": "com.pivaldi.kafpliz",
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
@@ -43,7 +45,6 @@
         }
       ]
     ],
-    
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

@@ -15,13 +15,13 @@ function RootLayoutContent() {
   const [showMainContent, setShowMainContent] = useState(false);
 
   useEffect(() => {
-  
+
     if (!isLoading && !hasError && restaurants.length > 0) {
       setShowMainContent(true);
     }
   }, [isLoading, hasError, restaurants]);
 
-  
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
@@ -29,9 +29,9 @@ function RootLayoutContent() {
       </View>
     );
   }
-  
 
-  
+
+
   if (hasError) {
     return (
       <Error />
@@ -65,14 +65,14 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    'Montserrat-Regular': require('../assets/fonts/Montserrat-Regular.ttf'),
+
     'BerlinType-Regular': require('../assets/fonts/BerlinType-Regular.otf'),
     'BerlinType-Bold': require('../assets/fonts/BerlinType-Bold.ttf'),
-    'Montserrat-Regular': require('../assets/fonts/Montserrat-Regular.ttf'),
     'Montserrat-SemiBold': require('../assets/fonts/Montserrat-SemiBold.ttf'),
-    'MontserratAlternates-ExtraBold': require('../assets/fonts/MontserratAlternates-ExtraBold.ttf'),
     'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
-    'RobotoCondensed': require('../assets/fonts/RobotoCondensed-VariableFont_wght.ttf'),
-    'Arial': require('../assets/fonts/arialmt.ttf'),
+    "Manrope": require('../assets/fonts/manrope.ttf'),
+
   })
   const [appIsReady, setAppIsReady] = useState(true)
 
@@ -84,16 +84,16 @@ export default function RootLayout() {
     }
   }, [isReady])
 
- /*  if (!appIsReady || !fontsLoaded) {
-    return (
-      <VideoSplash
-        onReady={() => {
-          setAppIsReady(true);
-        }}
-      />
-    );
-  }
- */
+  /*  if (!appIsReady || !fontsLoaded) {
+     return (
+       <VideoSplash
+         onReady={() => {
+           setAppIsReady(true);
+         }}
+       />
+     );
+   }
+  */
 
   return/*  !appIsReady ? <VideoSplash onReady={() => setAppIsReady(true)} /> : */ (
     <ApiProvider>

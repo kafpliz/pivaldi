@@ -5,7 +5,7 @@ const StyledText = ({ children, className, style, numberOfLines = undefined, fon
   className?: string;
   style?: StyleProp<TextStyle>;
   numberOfLines?: number | undefined,
-  fontFamily?: 'berlin' | 'berlin-bold' | 'm-regular' | 'm-semibold' | 'm-extrabold' | 'm-bold' |'roboto'|'arial'
+  fontFamily?: 'berlin' | 'berlin-bold' | 'm-regular' | 'm-semibold' | 'm-extrabold' | 'm-bold' | "manrope"
 }) => {
   const text = 'text-primary'
   const textColor = className && className.includes('text') ? className : text
@@ -22,13 +22,9 @@ const StyledText = ({ children, className, style, numberOfLines = undefined, fon
         return 'MontserratAlternates-ExtraBold'
       case 'm-semibold':
         return 'Montserrat-SemiBold'
-      case 'roboto':
-        return 'RobotoCondensed'
-      case 'arial':
-        return 'Arial'
 
       default:
-        return 'Montserrat-Regular';
+        return 'Manrope';
     }
   };
 
