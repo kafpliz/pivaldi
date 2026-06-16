@@ -25,7 +25,7 @@ const Input = ({ title, type, onValidationChange }: { title: string, type: 'phon
 
     return (
         <View className="w-full">
-            <StyledText className="text-active pl-5" fontFamily='berlin' style={{ fontSize: 16, fontWeight: 400, }} >{title}</StyledText>
+            <StyledText className="text-active pl-5" style={{ fontSize: 16, fontWeight: 400, }} >{title}</StyledText>
             {isPhone ? (
                 <MaskInput
                     className="w-full h-14 bg-active/15 rounded-xl pl-5 pr-5 text-primary"
@@ -110,7 +110,7 @@ const Select = ({ onValidationChange }: { onValidationChange: (text: string) => 
                             padding: 16,
                             alignItems: 'center'
                         }}>
-                            <StyledText className="text-primary" style={{ fontSize: 18, fontWeight: '600' }}>{t('vacancies.chooseRestaurantTitle')}</StyledText>
+                            <StyledText className="text-primary" style={{ fontSize: 18, }}>{t('vacancies.chooseRestaurantTitle')}</StyledText>
                         </View>
 
                         <ScrollView>
@@ -126,9 +126,9 @@ const Select = ({ onValidationChange }: { onValidationChange: (text: string) => 
                                         setModalVisible(false);
                                     }}
                                 >
-                                    <StyledText className="text-primary capitalize" fontFamily={selectedResto == item.id ? 'm-bold' : 'm-regular'} style={{
+                                    <StyledText className="text-primary capitalize"  style={{
                                         fontSize: 20,
-                                        fontWeight: 400,
+                                        fontWeight: selectedResto == item.id ? 600 : 400,
                                         textTransform: 'capitalize'
                                     }}>
                                         {transformRestoName(item.name, item.isFranchise)}
@@ -149,7 +149,7 @@ const Header = () => {
     return (
         <View className="w-full gap-3">
             <BackBtn name={t('vacancies.title')} />
-            <StyledText style={{ fontSize: 22, fontWeight: 600 }} className="text-user-text-1 text-justify" fontFamily="m-semibold" >{t('vacancies.intro')}</StyledText>
+            <StyledText style={{ fontSize: 22, fontWeight: 600 }} className="text-user-text-1 text-justify"  >{t('vacancies.intro')}</StyledText>
         </View>
     )
 }
@@ -230,14 +230,14 @@ const Vacancies = () => {
                             <Input title={t('vacancies.name')} type="name" onValidationChange={(text) => setName(text)} />
                             <Input title={t('vacancies.phone')} type="phone" onValidationChange={(text) => setPhone(text)} />
                             <Select onValidationChange={(text) => setSelectResto(text)} />
-                            {hasError && <StyledText className="text-red-600" fontFamily="berlin" style={{
+                            {hasError && <StyledText className="text-red-600" style={{
                                 fontSize: 14,
-                                fontWeight: 400
+                              
                             }} >{errMessage}</StyledText>}
                         </View>
 
                         <TouchableOpacity className="w-44 h-14 rounded-xl bg-active justify-center items-center" onPress={send} disabled={isSend} >
-                            <StyledText style={{ fontWeight: 400, fontSize: 20 }} className="text-white" fontFamily="berlin" >{t('common.submit')}</StyledText>
+                            <StyledText style={{ fontWeight: 400, fontSize: 20 }} className="text-white"  >{t('common.submit')}</StyledText>
                         </TouchableOpacity>
                     </View>
 

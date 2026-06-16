@@ -281,9 +281,9 @@ const Franchises = () => {
                     <List />
                     <View className="gap-3 w-full items-center">
                         <TouchableOpacity className="w-64 h-24 justify-center items-center bg-user-btn-1 rounded-xl" onPress={handleOpenModal}  >
-                            <StyledText style={{ fontSize: 24, fontWeight: 700 }} className="text-white text-center" >{t('franchise.leaveRequest')}</StyledText>
+                            <StyledText style={{ fontSize: 24, }} className="text-white text-center" >{t('franchise.leaveRequest')}</StyledText>
                         </TouchableOpacity>
-                        <StyledText style={{ fontSize: 14, fontWeight: 400, textAlign: 'justify' }} fontFamily="berlin">{t('franchise.disclaimer')}</StyledText>
+                        <StyledText style={{ fontSize: 14,  textAlign: 'justify' }} >{t('franchise.disclaimer')}</StyledText>
                     </View>
                 </View>
             </ScrollView>

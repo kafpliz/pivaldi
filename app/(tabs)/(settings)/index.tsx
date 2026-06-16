@@ -54,7 +54,7 @@ const SelectModal = ({
                         padding: 16,
                         alignItems: 'center'
                     }}>
-                        <StyledText className="text-primary" style={{ fontSize: 18, fontWeight: '600' }}>{title}</StyledText>
+                        <StyledText className="text-primary" style={{ fontSize: 18,  }}>{title}</StyledText>
                     </View>
 
                     <ScrollView>
@@ -70,9 +70,9 @@ const SelectModal = ({
                                     onClose();
                                 }}
                             >
-                                <StyledText className="text-primary capitalize" fontFamily={selectedKey === item.key ? 'm-bold' : 'm-regular'} style={{
+                                <StyledText className="text-primary capitalize" style={{
                                     fontSize: 20,
-                                    fontWeight: 400,
+                                    fontWeight: selectedKey === item.key ? 700 : 400,
                                     textTransform: 'capitalize'
                                 }}>
                                     {item.label}
@@ -139,24 +139,24 @@ const BarAction = () => {
             <TouchableOpacity className="flex-1 bg-btn-1 rounded-xl justify-center items-center flex-row gap-2 min-h-[52px]" onPress={() => setActiveModal('lang')} activeOpacity={1} >
 
                 <StyledText className="text-white" style={{
-                    fontWeight: 400,
+           
                     fontSize: 20
-                }} fontFamily="berlin" >{t('profile.language')}</StyledText>
+                }} >{t('profile.language')}</StyledText>
                 <Image source={icons.lang} style={{ width: 24, height: 24 }} />
             </TouchableOpacity>
 
             <TouchableOpacity className="flex-1 bg-active rounded-xl justify-around items-center flex-row relative min-h-[52px]" onPress={() => setActiveModal('theme')} activeOpacity={1} >
                 <StyledText className="text-white" style={{
-                    fontWeight: 400,
+                 
                     fontSize: 20
-                }} fontFamily="berlin" >{light ? t('profile.light') : t('profile.dark')}</StyledText>
+                }} >{light ? t('profile.light') : t('profile.dark')}</StyledText>
             </TouchableOpacity>
 
             <TouchableOpacity className="flex-1 bg-btn-1 rounded-xl justify-around items-center flex-row relative min-h-[52px]" onPress={toggleNotifications} activeOpacity={1} >
                 <StyledText className="text-white" style={{
-                    fontWeight: 400,
+                  
                     fontSize: 20
-                }} fontFamily="berlin" >{notifGranted ? t('settings.notification_off') : t('settings.notification_on')}</StyledText>
+                }} >{notifGranted ? t('settings.notification_off') : t('settings.notification_on')}</StyledText>
             </TouchableOpacity>
 
             <SelectModal

@@ -190,10 +190,10 @@ const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast }:
             )}
             <View className="gap-3">
                 <View className="w-full flex-row justify-between gap-2">
-                    <StyledText fontFamily="m-bold" style={{ fontSize: 20, fontWeight: '700', flex: 1, flexShrink: 1, color }}>{title}</StyledText>
+                    <StyledText style={{ fontSize: 20, fontWeight: '700', flex: 1, flexShrink: 1, color }}>{title}</StyledText>
                 </View>
                 <View>
-                    <StyledText fontFamily="m-bold" style={{ fontSize: 13, fontWeight: '700', color }}>{body}</StyledText>
+                    <StyledText  style={{ fontSize: 13,color }}>{body}</StyledText>
                 </View>
             </View>
         </View>
@@ -234,7 +234,7 @@ const groupByDate = (items: { id: Number; title: string; body: string; createdAt
 const DateHeader = ({ date }: { date: string }) => {
     return (
         <View className="w-full items-center py-3">
-            <StyledText fontFamily="m-bold" style={{ fontSize: 13, fontWeight: '600', opacity: 0.6 }}>{date}</StyledText>
+            <StyledText style={{ fontSize: 13, fontWeight: '600', opacity: 0.6 }}>{date}</StyledText>
         </View>
     );
 };

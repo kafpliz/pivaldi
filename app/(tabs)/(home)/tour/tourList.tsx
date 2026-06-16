@@ -122,9 +122,9 @@ const Content = ({ data }: { data: IResto }) => {
                         restoId: data.id
                     }
                 })}>
-                <StyledText className="text-brown" fontFamily={'m-bold'} style={{
+                <StyledText className="text-brown" style={{
                     fontSize: 20,
-                    fontWeight: 700,
+              
                     textAlign: 'center'
                 }} >{t('addresses.tour')}</StyledText>
             </TouchableOpacity>
@@ -137,14 +137,13 @@ const Content = ({ data }: { data: IResto }) => {
                 }}
             >
 
-                <StyledText className="text-primary" fontFamily='berlin' style={{
+                <StyledText className="text-primary" style={{
                     fontSize: 20,
-                    fontWeight: 700,
+                 
                     textAlign: 'center'
                 }} >{transformRestoName(data.name, data.isFranchise)}</StyledText>
-                <StyledText className="" fontFamily='berlin' style={{
+                <StyledText className="" style={{
                     fontSize: 13,
-                    fontWeight: 700,
                     textAlign: 'center',
                     color: isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(109, 94, 73, 1)'
                 }} >{addres}</StyledText>
@@ -165,15 +164,15 @@ const Content = ({ data }: { data: IResto }) => {
                     borderWidth: 2,
                     borderColor: 'rgba(67, 48, 19, 1)'
                 }}>
-                    <StyledText className="text-primary" fontFamily='berlin' style={{
+                    <StyledText className="text-primary"  style={{
                         fontSize: 20,
-                        fontWeight: 700,
+               
                         textAlign: 'center'
                     }} >{t('addresses.workHours')}</StyledText>
                     {workHours.map((item) => (
-                        <StyledText key={item} className="" fontFamily='berlin' style={{
+                        <StyledText key={item} className=""  style={{
                             fontSize: 20,
-                            fontWeight: 700,
+                        
                             textAlign: 'center',
                             color: isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(109, 94, 73, 1)'
                         }} >{item}</StyledText>
@@ -204,9 +203,9 @@ const Content = ({ data }: { data: IResto }) => {
                     );
                 }
             }}>
-                <StyledText className="" fontFamily='berlin' style={{
+                <StyledText  style={{
                     fontSize: 20,
-                    fontWeight: 700,
+          
                     textAlign: 'center',
                     color: isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(109, 94, 73, 1)'
                 }} >{phone}</StyledText>
