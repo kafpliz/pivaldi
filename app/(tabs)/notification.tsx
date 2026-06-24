@@ -171,13 +171,18 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
     return null;
 };
 
-const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast }: { title: string; body: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical'; isFirst?: boolean; isLast?: boolean }) => {
+const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast,time }: { title: string; body: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical'; isFirst?: boolean; isLast?: boolean, time:string }) => {
     const { isDark } = useTheme();
     const color = isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(67, 48, 20, 1)';
     const backgroundColor = isDark ? 'rgba(52, 52, 52, 1)' : 'rgba(203, 192, 173, 1)';
     const hasMedia = (images && images.length > 0) || !!video;
 
     const marginBottom = isLast ? 0 : 15;
+    const timeObj  = new Date(time)
+    const timeFormat = `${timeObj.getHours() < 10 ? "0" + timeObj.getHours() : timeObj.getHours()}:${timeObj.getMinutes() < 10 ? "0" + timeObj.getMinutes() : timeObj.getMinutes() }`
+  
+    console.log(timeFormat);
+    
 
     return (
         <View className="w-full min-h-20 p-5 gap-5" style={{
@@ -194,6 +199,9 @@ const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast }:
                 </View>
                 <View>
                     <StyledText  style={{ fontSize: 13,color }}>{body}</StyledText>
+                </View>
+                <View className="w-full items-end">
+                    <StyledText  style={{ fontSize: 13,color, }}>{timeFormat}</StyledText>
                 </View>
             </View>
         </View>
@@ -337,6 +345,7 @@ const Notification = () => {
                                 videoOrientation={item.videoOrientation}
                                 isFirst={index === 0}
                                 isLast={index === section.data.length - 1}
+                                time={item.createdAt}
                             />
                         )}
                         SectionSeparatorComponent={null}
