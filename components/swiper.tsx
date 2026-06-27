@@ -28,6 +28,8 @@ export const SwiperComp = ({ data,onPress }: { data: IMenu[], onPress: (id:numbe
                 data={data}
                 width={ACTIVE_SLIDE_WIDTH}
                 height={160}
+                autoPlayInterval={5000}
+                autoPlay={true}
                 style={{ width: screenWidth, justifyContent: 'center',
                     alignItems: 'center' }}
                 mode="parallax"
