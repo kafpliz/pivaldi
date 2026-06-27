@@ -1,4 +1,5 @@
 import { Image, ImageBackground } from "expo-image"
+import type { ImageLoadEventData } from "expo-image"
 import { useState } from "react"
 import { ActivityIndicator, Modal, TouchableOpacity, View } from "react-native"
 import { BlurView } from 'expo-blur'; 
@@ -7,8 +8,8 @@ import { BlurView } from 'expo-blur';
 import { icons } from "@/assets/constants/icon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const CustomImage = ({ uri, type, children, border = 0, style = {}, contentFit = 'cover', hasViewing = true }:
-    { uri: string, type: 'simple' | 'background', children?: React.ReactNode, border?: number, style?: any, contentFit?: 'cover' | 'contain', hasViewing?: boolean }) => {
+const CustomImage = ({ uri, type, children, border = 0, style = {}, contentFit = 'cover', hasViewing = true, onLoad }:
+    { uri: string, type: 'simple' | 'background', children?: React.ReactNode, border?: number, style?: any, contentFit?: 'cover' | 'contain', hasViewing?: boolean, onLoad?: (event: ImageLoadEventData) => void }) => {
     const [isLoading, setIsLoading] = useState(true)
     const [viewerVisible, setViewerVisible] = useState(false);
     const { top } = useSafeAreaInsets();
@@ -59,6 +60,7 @@ const CustomImage = ({ uri, type, children, border = 0, style = {}, contentFit =
                             style={{ ...style, borderRadius: border }}
                             contentFit={contentFit}
                             transition={0}
+                            onLoad={onLoad}
                             onLoadStart={() => setIsLoading(true)}
                             onLoadEnd={() => setIsLoading(false)}
                             cachePolicy="memory-disk"

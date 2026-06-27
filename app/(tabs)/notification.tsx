@@ -8,7 +8,7 @@ import { apiClient } from "@/services/api.client";
 import { ImageBackground } from "expo-image";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, LayoutAnimation, RefreshControl, SectionList, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, RefreshControl, SectionList, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
@@ -59,6 +59,28 @@ const VideoBlock = ({ video, videoOrientation }: { video: string; videoOrientati
     );
 };
 
+const SingleNotificationImage = ({ uri }: { uri: string }) => {
+    const [aspectRatio, setAspectRatio] = useState(16 / 9)
+
+    return (
+        <View className="w-full rounded-xl overflow-hidden" style={{ aspectRatio }}>
+            <CustomImage
+                uri={uri}
+                type="simple"
+                style={{ width: '100%', height: '100%' }}
+                contentFit="cover"
+                hasViewing={true}
+                onLoad={(event) => {
+                    const { width, height } = event.source
+                    if (width > 0 && height > 0) {
+                        setAspectRatio(width / height)
+                    }
+                }}
+            />
+        </View>
+    )
+}
+
 const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificationMedia & { videoOrientation?: 'horizontal' | 'vertical' }) => {
 
     if (video) {
@@ -69,13 +91,8 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
         const count = images.length;
 
         if (count === 1) {
-            return (
-                <View className="w-full rounded-xl overflow-hidden" style={{ aspectRatio: 16 / 9 }}>
-                    <CustomImage uri={images[0]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                </View>
-            );
+            return <SingleNotificationImage uri={images[0]} />;
         }
-
 
         if (count === 2) {
             return (
@@ -86,10 +103,8 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
                         </View>
                     ))}
                 </View>
-
             );
         }
-
 
         if (count === 3) {
             return (
@@ -131,7 +146,6 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
                 </View>
             );
         }
-
 
         if (count === 5) {
             const topRow = images.slice(0, 2);
