@@ -6,6 +6,7 @@ import { useLanguage } from "@/contex/language.context";
 import { useTheme } from "@/contex/theme-context";
 import { apiClient } from "@/services/api.client";
 import { ImageBackground } from "expo-image";
+import type { ImageLoadEventData } from "expo-image";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, RefreshControl, SectionList, TouchableOpacity, View } from "react-native";
@@ -29,6 +30,7 @@ type NotificationItem = {
 
 const MEDIA_GAP = 2;
 const MAX_ALBUM_PREVIEW_ITEMS = 6;
+type TwoImageDirection = 'row' | 'column';
 
 
 
@@ -84,7 +86,7 @@ const SingleNotificationImage = ({ uri }: { uri: string }) => {
     )
 }
 
-const TelegramImageTile = ({ uri, extraCount = 0 }: { uri: string; extraCount?: number }) => {
+const TelegramImageTile = ({ uri, extraCount = 0, onLoad }: { uri: string; extraCount?: number; onLoad?: (event: ImageLoadEventData) => void }) => {
     return (
         <View className="flex-1 overflow-hidden" style={{ position: 'relative' }}>
             <CustomImage
@@ -93,6 +95,7 @@ const TelegramImageTile = ({ uri, extraCount = 0 }: { uri: string; extraCount?: 
                 style={{ width: '100%', height: '100%' }}
                 containerStyle={{ width: '100%', height: '100%' }}
                 hasViewing={true}
+                onLoad={onLoad}
             />
             {extraCount > 0 && (
                 <View
@@ -114,6 +117,74 @@ const TelegramImageTile = ({ uri, extraCount = 0 }: { uri: string; extraCount?: 
     )
 }
 
+const getTwoImageDirection = (ratios: (number | null)[]): TwoImageDirection => {
+    const loadedRatios = ratios.filter((ratio): ratio is number => ratio !== null);
+
+    if (loadedRatios.length === 0) {
+        return 'row';
+    }
+
+    const horizontalCount = loadedRatios.filter((ratio) => ratio >= 1).length;
+    const verticalCount = loadedRatios.length - horizontalCount;
+
+    if (horizontalCount === verticalCount) {
+        return loadedRatios[0] >= 1 ? 'column' : 'row';
+    }
+
+    return horizontalCount > verticalCount ? 'column' : 'row';
+};
+
+const getTwoImageAspectRatio = (ratios: (number | null)[], direction: TwoImageDirection) => {
+    const loadedRatios = ratios.filter((ratio): ratio is number => ratio !== null);
+
+    if (loadedRatios.length === 0) {
+        return 16 / 9;
+    }
+
+    const averageRatio = loadedRatios.reduce((sum, ratio) => sum + ratio, 0) / loadedRatios.length;
+
+    if (direction === 'column') {
+        return Math.min(Math.max(averageRatio / 2, 0.8), 1.15);
+    }
+
+    return Math.min(Math.max(averageRatio * 2, 1.05), 1.45);
+};
+
+const TwoImageNotificationGrid = ({ images }: { images: string[] }) => {
+    const [ratios, setRatios] = useState<(number | null)[]>([null, null]);
+    const direction = getTwoImageDirection(ratios);
+    const aspectRatio = getTwoImageAspectRatio(ratios, direction);
+
+    const handleImageLoad = (index: number) => (event: ImageLoadEventData) => {
+        const { width, height } = event.source;
+
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+
+        setRatios((currentRatios) => {
+            const nextRatios = [...currentRatios];
+            nextRatios[index] = width / height;
+            return nextRatios;
+        });
+    };
+
+    return (
+        <View
+            className="w-full rounded-xl overflow-hidden"
+            style={{
+                aspectRatio,
+                flexDirection: direction,
+                gap: MEDIA_GAP,
+            }}
+        >
+            {images.map((img, idx) => (
+                <TelegramImageTile key={idx} uri={img} onLoad={handleImageLoad(idx)} />
+            ))}
+        </View>
+    );
+};
+
 const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificationMedia & { videoOrientation?: 'horizontal' | 'vertical' }) => {
 
     if (video) {
@@ -128,13 +199,7 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
         }
 
         if (count === 2) {
-            return (
-                <View className="w-full flex-row rounded-xl overflow-hidden" style={{ aspectRatio: 16 / 9, gap: MEDIA_GAP }}>
-                    {images.map((img, idx) => (
-                        <TelegramImageTile key={idx} uri={img} />
-                    ))}
-                </View>
-            );
+            return <TwoImageNotificationGrid images={images} />;
         }
 
         if (count === 3) {
