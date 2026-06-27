@@ -1,4 +1,3 @@
-import { icons } from "@/assets/constants/icon";
 import { img } from "@/assets/constants/img";
 import { IBlog, IRes } from "@/assets/interfaces/context";
 import CustomImage from "@/components/CustomImg";
@@ -9,7 +8,7 @@ import { apiClient } from "@/services/api.client";
 import { ImageBackground } from "expo-image";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, RefreshControl, SectionList, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, LayoutAnimation, RefreshControl, SectionList, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
@@ -17,6 +16,19 @@ interface INotificationMedia {
     images?: string[];
     video?: string;
 }
+
+type NotificationItem = {
+    id: number;
+    title: string;
+    body: string;
+    createdAt: string;
+    images?: string[];
+    video?: string;
+    videoOrientation?: 'horizontal' | 'vertical';
+};
+
+
+
 
 const VideoBlock = ({ video, videoOrientation }: { video: string; videoOrientation?: 'horizontal' | 'vertical' }) => {
     const player = useVideoPlayer(video, (p) => {
@@ -171,18 +183,15 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
     return null;
 };
 
-const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast,time }: { title: string; body: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical'; isFirst?: boolean; isLast?: boolean, time:string }) => {
+const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast, time }: { title: string; body: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical'; isFirst?: boolean; isLast?: boolean, time: string }) => {
     const { isDark } = useTheme();
     const color = isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(67, 48, 20, 1)';
     const backgroundColor = isDark ? 'rgba(52, 52, 52, 1)' : 'rgba(203, 192, 173, 1)';
     const hasMedia = (images && images.length > 0) || !!video;
 
     const marginBottom = isLast ? 0 : 15;
-    const timeObj  = new Date(time)
-    const timeFormat = `${timeObj.getHours() < 10 ? "0" + timeObj.getHours() : timeObj.getHours()}:${timeObj.getMinutes() < 10 ? "0" + timeObj.getMinutes() : timeObj.getMinutes() }`
-  
-    console.log(timeFormat);
-    
+    const timeObj = new Date(time)
+    const timeFormat = `${timeObj.getHours() < 10 ? "0" + timeObj.getHours() : timeObj.getHours()}:${timeObj.getMinutes() < 10 ? "0" + timeObj.getMinutes() : timeObj.getMinutes()}`
 
     return (
         <View className="w-full min-h-20 p-5 gap-5" style={{
@@ -198,10 +207,10 @@ const Card = ({ title, body, images, video, videoOrientation, isFirst, isLast,ti
                     <StyledText style={{ fontSize: 20, fontWeight: '700', flex: 1, flexShrink: 1, color }}>{title}</StyledText>
                 </View>
                 <View>
-                    <StyledText  style={{ fontSize: 13,color }}>{body}</StyledText>
+                    <StyledText style={{ fontSize: 13, color }}>{body}</StyledText>
                 </View>
                 <View className="w-full items-end">
-                    <StyledText  style={{ fontSize: 13,color, }}>{timeFormat}</StyledText>
+                    <StyledText style={{ fontSize: 13, color, }}>{timeFormat}</StyledText>
                 </View>
             </View>
         </View>
@@ -225,7 +234,7 @@ const formatDateLabel = (dateString: string): string => {
     return `${day}.${month}.${year}`;
 };
 
-const groupByDate = (items: { id: Number; title: string; body: string; createdAt: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical' }[]) => {
+const groupByDate = (items: NotificationItem[]) => {
     const groups: { date: string; items: typeof items }[] = [];
     items.forEach(item => {
         const dateStr = formatDateLabel(item.createdAt);
@@ -252,7 +261,7 @@ const Notification = () => {
     const [isLoad, setIsLoad] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [isLoadingMore, setIsLoadingMore] = useState(false)
-    const [data, setData] = useState<{ id: Number; title: string; body: string; createdAt: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical' }[]>([])
+    const [data, setData] = useState<NotificationItem[]>([])
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
     const [hasNext, setHasNext] = useState(false)
@@ -378,6 +387,7 @@ const Notification = () => {
         </View>
     );
 }
+
 
 
 

@@ -177,11 +177,11 @@ const Content = ({ data, activeId }: { data: ICategory[], activeId?: number }) =
                                 {!isBar&& 
                                 <View className="w-full flex-row gap-2">
                                     <View className="flex-1 flex-shrink">
-                                        <StyledText numberOfLines={2} className="text-primary"  fontFamily="m-semibold" style={{
+                                        <StyledText numberOfLines={3} className="text-primary"  fontFamily="m-semibold" style={{
                                             fontSize: 13,
                                             fontWeight: 600
                                         }} >{transformFirstLetter(item.name)}</StyledText>
-                                       {item.comment &&  <StyledText numberOfLines={2} className="text-primary"  fontFamily="m-semibold" style={{
+                                       {item.comment &&  <StyledText numberOfLines={3} className="text-primary"  fontFamily="m-semibold" style={{
                                             fontSize: 11,
                                             fontWeight: 600
                                         }} >{transformFirstLetter(item.comment)}</StyledText>}

@@ -38,6 +38,7 @@ export const transformBookingName = (name:string, second:string)=> {
 export const transformFirstLetter = (name:string)=> {
       const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
 
+
       return `${formattedName}`
 }
 

@@ -6,7 +6,7 @@ export interface IRes<T = any> {
 }
 export interface IBlog
  { 
- blog: { id: Number; title: string; body: string; createdAt: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical' }[]
+ blog: { id: number; title: string; body: string; createdAt: string; images?: string[]; video?: string; videoOrientation?: 'horizontal' | 'vertical' }[]
  details: {
   hasNext:boolean
  }

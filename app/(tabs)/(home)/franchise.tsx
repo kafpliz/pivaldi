@@ -239,7 +239,7 @@ const List = () => {
             {franchises && franchises.map((item, idx) => (
                 <View key={idx} className="w-full ">
                   
-                   <CustomImage uri={item.photo} border={12} type={'simple'} style={{ width: '100%', aspectRatio: 16/9 }} />
+                   <CustomImage uri={item.photo} border={12} type={'simple'} style={{ width: '100%', aspectRatio: 9/16 }}  />
                 </View>
             ))}
         </View>
