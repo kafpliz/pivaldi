@@ -8,8 +8,8 @@ import { BlurView } from 'expo-blur';
 import { icons } from "@/assets/constants/icon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const CustomImage = ({ uri, type, children, border = 0, style = {}, contentFit = 'cover', hasViewing = true, onLoad }:
-    { uri: string, type: 'simple' | 'background', children?: React.ReactNode, border?: number, style?: any, contentFit?: 'cover' | 'contain', hasViewing?: boolean, onLoad?: (event: ImageLoadEventData) => void }) => {
+const CustomImage = ({ uri, type, children, border = 0, style = {}, containerStyle = {}, contentFit = 'cover', hasViewing = true, onLoad }:
+    { uri: string, type: 'simple' | 'background', children?: React.ReactNode, border?: number, style?: any, containerStyle?: any, contentFit?: 'cover' | 'contain', hasViewing?: boolean, onLoad?: (event: ImageLoadEventData) => void }) => {
     const [isLoading, setIsLoading] = useState(true)
     const [viewerVisible, setViewerVisible] = useState(false);
     const { top } = useSafeAreaInsets();
@@ -53,8 +53,9 @@ const CustomImage = ({ uri, type, children, border = 0, style = {}, contentFit =
                  <TouchableOpacity
                     activeOpacity={0.9}
                     onPress={() => hasViewing ? setViewerVisible(true) : setViewerVisible(false)}
+                    style={containerStyle}
                 >
-                    <View style={[{ position: 'relative', overflow: 'hidden' }]}>
+                    <View style={[{ position: 'relative', overflow: 'hidden' }, containerStyle]}>
                         <Image
                             source={{ uri }}
                             style={{ ...style, borderRadius: border }}

@@ -27,6 +27,8 @@ type NotificationItem = {
     videoOrientation?: 'horizontal' | 'vertical';
 };
 
+const MEDIA_GAP = 2;
+const MAX_ALBUM_PREVIEW_ITEMS = 6;
 
 
 
@@ -68,6 +70,7 @@ const SingleNotificationImage = ({ uri }: { uri: string }) => {
                 uri={uri}
                 type="simple"
                 style={{ width: '100%', height: '100%' }}
+                containerStyle={{ width: '100%', height: '100%' }}
                 contentFit="cover"
                 hasViewing={true}
                 onLoad={(event) => {
@@ -77,6 +80,36 @@ const SingleNotificationImage = ({ uri }: { uri: string }) => {
                     }
                 }}
             />
+        </View>
+    )
+}
+
+const TelegramImageTile = ({ uri, extraCount = 0 }: { uri: string; extraCount?: number }) => {
+    return (
+        <View className="flex-1 overflow-hidden" style={{ position: 'relative' }}>
+            <CustomImage
+                uri={uri}
+                type="simple"
+                style={{ width: '100%', height: '100%' }}
+                containerStyle={{ width: '100%', height: '100%' }}
+                hasViewing={true}
+            />
+            {extraCount > 0 && (
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgba(0,0,0,0.45)',
+                    }}
+                >
+                    <StyledText style={{ color: '#fff', fontSize: 26, fontWeight: '700' }}>+{extraCount}</StyledText>
+                </View>
+            )}
         </View>
     )
 }
@@ -96,11 +129,9 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
 
         if (count === 2) {
             return (
-                <View className="w-full flex-row gap-1 rounded-xl overflow-hidden" style={{ aspectRatio: 16 / 9 }}>
+                <View className="w-full flex-row rounded-xl overflow-hidden" style={{ aspectRatio: 16 / 9, gap: MEDIA_GAP }}>
                     {images.map((img, idx) => (
-                        <View key={idx} className="flex-1 h-full">
-                            <CustomImage uri={img} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
+                        <TelegramImageTile key={idx} uri={img} />
                     ))}
                 </View>
             );
@@ -108,17 +139,13 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
 
         if (count === 3) {
             return (
-                <View className="w-full flex-row gap-1 rounded-xl overflow-hidden" style={{ aspectRatio: 16 / 9 }}>
-                    <View className="flex-1">
-                        <CustomImage uri={images[0]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
+                <View className="w-full flex-row rounded-xl overflow-hidden" style={{ aspectRatio: 16 / 9, gap: MEDIA_GAP }}>
+                    <View style={{ flex: 2 }}>
+                        <TelegramImageTile uri={images[0]} />
                     </View>
-                    <View className="flex-1 gap-1">
-                        <View className="flex-1">
-                            <CustomImage uri={images[1]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
-                        <View className="flex-1">
-                            <CustomImage uri={images[2]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
+                    <View style={{ flex: 1, gap: MEDIA_GAP }}>
+                        <TelegramImageTile uri={images[1]} />
+                        <TelegramImageTile uri={images[2]} />
                     </View>
                 </View>
             );
@@ -127,21 +154,13 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
         if (count === 4) {
             return (
                 <View className="w-full rounded-xl overflow-hidden" style={{ aspectRatio: 1 / 1 }}>
-                    <View className="flex-1 flex-row gap-1">
-                        <View className="flex-1">
-                            <CustomImage uri={images[0]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
-                        <View className="flex-1">
-                            <CustomImage uri={images[1]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
+                    <View className="flex-1 flex-row" style={{ gap: MEDIA_GAP }}>
+                        <TelegramImageTile uri={images[0]} />
+                        <TelegramImageTile uri={images[1]} />
                     </View>
-                    <View className="flex-1 flex-row gap-1 mt-1">
-                        <View className="flex-1">
-                            <CustomImage uri={images[2]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
-                        <View className="flex-1">
-                            <CustomImage uri={images[3]} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
+                    <View className="flex-1 flex-row" style={{ gap: MEDIA_GAP, marginTop: MEDIA_GAP }}>
+                        <TelegramImageTile uri={images[2]} />
+                        <TelegramImageTile uri={images[3]} />
                     </View>
                 </View>
             );
@@ -153,41 +172,39 @@ const NotificationMediaBlock = ({ images, video, videoOrientation }: INotificati
 
             return (
                 <View className="w-full rounded-xl overflow-hidden" style={{ aspectRatio: 2 / 3 }}>
-                    <View className="flex-1 flex-row gap-1">
+                    <View className="flex-1 flex-row" style={{ gap: MEDIA_GAP }}>
                         {topRow.map((img, idx) => (
-                            <View key={idx} className="flex-1">
-                                <CustomImage uri={img} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                            </View>
+                            <TelegramImageTile key={idx} uri={img} />
                         ))}
                     </View>
-                    <View className="flex-1 flex-row gap-1 mt-1">
+                    <View className="flex-1 flex-row" style={{ gap: MEDIA_GAP, marginTop: MEDIA_GAP }}>
                         {bottomRow.map((img, idx) => (
-                            <View key={idx} className="flex-1">
-                                <CustomImage uri={img} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                            </View>
+                            <TelegramImageTile key={idx} uri={img} />
                         ))}
                     </View>
                 </View>
             );
         }
 
-        const topRow = images.slice(0, 3);
-        const bottomRow = images.slice(3, 6);
+        const previewImages = images.slice(0, MAX_ALBUM_PREVIEW_ITEMS);
+        const topRow = previewImages.slice(0, 3);
+        const bottomRow = previewImages.slice(3, 6);
+        const extraCount = images.length - MAX_ALBUM_PREVIEW_ITEMS;
 
         return (
             <View className="w-full rounded-xl overflow-hidden" style={{ aspectRatio: 2 / 3 }}>
-                <View className="flex-1 flex-row gap-1">
+                <View className="flex-1 flex-row" style={{ gap: MEDIA_GAP }}>
                     {topRow.map((img, idx) => (
-                        <View key={idx} className="flex-1">
-                            <CustomImage uri={img} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
+                        <TelegramImageTile key={idx} uri={img} />
                     ))}
                 </View>
-                <View className="flex-1 flex-row gap-1 mt-1">
+                <View className="flex-1 flex-row" style={{ gap: MEDIA_GAP, marginTop: MEDIA_GAP }}>
                     {bottomRow.map((img, idx) => (
-                        <View key={idx} className="flex-1">
-                            <CustomImage uri={img} type="simple" style={{ width: '100%', height: '100%' }} hasViewing={true} />
-                        </View>
+                        <TelegramImageTile
+                            key={idx}
+                            uri={img}
+                            extraCount={idx === bottomRow.length - 1 ? extraCount : 0}
+                        />
                     ))}
                 </View>
             </View>
