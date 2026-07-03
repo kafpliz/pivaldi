@@ -1,11 +1,41 @@
 import { VideoView, useVideoPlayer } from 'expo-video';
+import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, Vibration } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
 const SPLASH_VIDEO = require('../assets/splash.mp4');
 const MIN_DURATION = 5000;
 const MAX_DURATION = 12000;
 const FADE_DURATION = 400;
+const SOFT_BUZZ_DURATION = 5000;
+const SOFT_BUZZ_BURSTS = [
+    { pulses: 12, pulsePause: 28, gapAfter: 170 },
+    { pulses: 3, pulsePause: 46, gapAfter: 150 },
+    { pulses: 11, pulsePause: 30, gapAfter: 220 },
+];
+
+const sleep = (duration: number) => new Promise((resolve) => setTimeout(resolve, duration));
+
+const playSoftBuzz = async (shouldStop: () => boolean) => {
+    const startedAt = Date.now();
+    let burstIndex = 0;
+
+    while (!shouldStop() && Date.now() - startedAt < SOFT_BUZZ_DURATION) {
+        const burst = SOFT_BUZZ_BURSTS[burstIndex % SOFT_BUZZ_BURSTS.length];
+
+        for (let i = 0; i < burst.pulses; i++) {
+            if (shouldStop() || Date.now() - startedAt >= SOFT_BUZZ_DURATION) {
+                return;
+            }
+
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => { });
+            await sleep(burst.pulsePause + (i % 3) * 4);
+        }
+
+        burstIndex += 1;
+        await sleep(burst.gapAfter);
+    }
+};
 
 type VideoSplashProps = {
     isAppReady: boolean;
@@ -27,12 +57,12 @@ export default function VideoSplash({ isAppReady, onFinish }: VideoSplashProps) 
 
    
     const startHaptics = (): (() => void) => {
-        const TOTAL_DURATION = 2000; // длительность непрерывной вибрации, мс
+        let isStopped = false;
 
-        Vibration.vibrate(TOTAL_DURATION);
+        void playSoftBuzz(() => isStopped);
 
         return () => {
-            Vibration.cancel();
+            isStopped = true;
         };
     };
 
