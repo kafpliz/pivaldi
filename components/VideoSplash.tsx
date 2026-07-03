@@ -1,44 +1,129 @@
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { useEffect, useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet } from 'react-native';
+
+const SPLASH_VIDEO = 'https://pivaldi.online/public/splash.mp4';
+const MIN_DURATION = 5000; 
+const MAX_DURATION = 12000; 
+const FADE_DURATION = 400; 
 
 type VideoSplashProps = {
-    onReady: () => void;
+    isAppReady: boolean;
+    onFinish: () => void;
 };
 
-export default function VideoSplash({ onReady }: VideoSplashProps) {
-    const [isVideoReady, setIsVideoReady] = useState(false);
+export default function VideoSplash({ isAppReady, onFinish }: VideoSplashProps) {
+    const [videoDone, setVideoDone] = useState(false);
+    const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+    const opacity = useRef(new Animated.Value(1)).current;
+    const finishedRef = useRef(false);
+    const hapticsStartedRef = useRef(false);
 
-    const player = useVideoPlayer('https://pivaldi.online/public/splash.mp4', player => {
-        player.loop = false;
+    const player = useVideoPlayer(SPLASH_VIDEO, (player) => {
+        player.loop = false; 
+        player.muted = true;
         player.play();
-        
-
-        setIsVideoReady(true);
     });
 
+
+   
+    const startHaptics = (): (() => void) => {
+        const VIBRATION_DURATION = 5000; 
+        const PHASE_1_END = 1800;        
+        const PHASE_2_END = 2800;        
+
+        let timer: ReturnType<typeof setTimeout> | null = null;
+        const startedAt = Date.now();
+
+        const fire = (style: Haptics.ImpactFeedbackStyle) => {
+            Haptics.impactAsync(style).catch(() => { });
+        };
+
+        const tick = () => {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed >= VIBRATION_DURATION) return;
+
+            let style: Haptics.ImpactFeedbackStyle;
+            let nextDelay: number;
+
+            if (elapsed < PHASE_1_END) {
+                // сильно и часто
+                style = Haptics.ImpactFeedbackStyle.Heavy;
+                nextDelay = 45;
+            } else if (elapsed < PHASE_2_END) {
+                // тише и реже
+                style = Haptics.ImpactFeedbackStyle.Light;
+                nextDelay = 90;
+            } else {
+                // снова сильно и часто
+                style = Haptics.ImpactFeedbackStyle.Heavy;
+                nextDelay = 45;
+            }
+
+            fire(style);
+            timer = setTimeout(tick, nextDelay);
+        };
+
+        tick();
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    };
+
+    // Запускаем вибрацию ровно в момент, когда видео фактически начало играть.
     useEffect(() => {
-        if (isVideoReady) {
-         
-            const timer = setTimeout(() => {
-                onReady();
-            }, 3000); 
+        let stopHaptics: (() => void) | null = null;
 
-       
-            const stopTimer = setTimeout(() => {
-                if (player) {
-                    player.pause();
-                }
-            }, 3000);
+        const sub = player.addListener('playingChange', ({ isPlaying }) => {
+            if (isPlaying && !hapticsStartedRef.current) {
+                hapticsStartedRef.current = true;
+                stopHaptics = startHaptics();
+            }
+        });
 
-            return () => {
-                clearTimeout(timer);
-                clearTimeout(stopTimer);
-            };
+        return () => {
+            sub.remove();
+            if (stopHaptics) stopHaptics();
+        };
+    }, [player]);
+
+    useEffect(() => {
+        const sub = player.addListener('playToEnd', () => {
+            setVideoDone(true);
+        });
+        return () => sub.remove();
+    }, [player]);
+
+    
+    useEffect(() => {
+        const minTimer = setTimeout(() => setMinTimeElapsed(true), MIN_DURATION);
+        const maxTimer = setTimeout(() => setVideoDone(true), MAX_DURATION);
+        return () => {
+            clearTimeout(minTimer);
+            clearTimeout(maxTimer);
+        };
+    }, []);
+
+
+    useEffect(() => {
+        if (videoDone && minTimeElapsed && isAppReady && !finishedRef.current) {
+            finishedRef.current = true;
+
+            Animated.timing(opacity, {
+                toValue: 0,
+                duration: FADE_DURATION,
+                useNativeDriver: true,
+            }).start(() => {
+                player.pause();
+                onFinish();
+            });
         }
-    }, [isVideoReady, onReady, player]);
+    }, [videoDone, minTimeElapsed, isAppReady, onFinish, opacity, player]);
+
     return (
-        <View style={styles.container}>
+        <Animated.View style={[styles.container, { opacity }]}>
             <VideoView
                 player={player}
                 style={styles.video}
@@ -46,27 +131,19 @@ export default function VideoSplash({ onReady }: VideoSplashProps) {
                 nativeControls={false}
                 allowsPictureInPicture={false}
             />
-            <Image
-                source={require('../assets/images/splash/splash.png')}
-                style={styles.logo}
-            />
-        </View>
+        </Animated.View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#e0a275' },
+    container: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: '#B09D7D',
+        zIndex: 10,
+    },
     video: {
         position: 'absolute',
         width: '100%',
-        height: '100%'
-    },
-    logo: {
-        position: 'absolute',
-        alignSelf: 'center',
-        top: '40%',
-        width: 200,
-        height: 200,
-        resizeMode: 'contain',
+        height: '100%',
     },
 });

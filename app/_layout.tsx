@@ -1,5 +1,5 @@
-import { Stack, } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
+import { Stack } from "expo-router";
+import { View } from "react-native";
 import "./global.css";
 import { ThemeProvider, themeVars, useTheme } from "@/contex/theme-context";
 import { useFonts } from 'expo-font';
@@ -10,99 +10,73 @@ import { ApiProvider, useApi } from "@/contex/api.context";
 import Error from "./error";
 import { LanguageProvider } from "@/contex/language.context";
 
-function RootLayoutContent() {
-  const { isLoading, hasError, restaurants } = useApi();
-  const [showMainContent, setShowMainContent] = useState(false);
-
-  useEffect(() => {
-
-    if (!isLoading && !hasError && restaurants.length > 0) {
-      setShowMainContent(true);
-    }
-  }, [isLoading, hasError, restaurants]);
-
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-        <ActivityIndicator size="large" color="#F59E0B" />
-      </View>
-    );
-  }
-
-
-
-  if (hasError) {
-    return (
-      <Error />
-    );
-  }
-
-
-  if (showMainContent) {
-    return (
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    );
-  }
-
-
-  return null;
-}
-
-
+// Не даём нативному сплэшу автоматически прятаться — прячем вручную,
+// как только смонтируется React и станет виден наш VideoSplash.
+SplashScreen.preventAutoHideAsync().catch(() => { });
 
 function RootLayoutNav() {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
 
   return (
     <View style={[{ flex: 1 }, themeVars[theme]]}>
-      <RootLayoutContent />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+      </Stack>
     </View>
-  )
+  );
+}
+
+/**
+ * Gate решает, что показывать: видео-сплэш или основной контент.
+ * Данные грузятся ApiProvider'ом СРАЗУ (во время сплэша),
+ * поэтому сплэш скроется когда пройдёт минимум 3 сек И данные готовы.
+ */
+function Gate({ fontsLoaded }: { fontsLoaded: boolean }) {
+  const { isLoading, hasError, restaurants } = useApi();
+  const [splashFinished, setSplashFinished] = useState(false);
+
+  // Прячем нативный сплэш, как только смонтировался React (виден VideoSplash)
+  useEffect(() => {
+    SplashScreen.hideAsync().catch(() => { });
+  }, []);
+
+  // Приложение готово: шрифты загружены и данные пришли (или произошла ошибка)
+  const isAppReady =
+    fontsLoaded && !isLoading && (restaurants.length > 0 || hasError);
+
+  return (
+    <View style={{ flex: 1 }}>
+      {/* Основной контент монтируется под сплэшем, чтобы успеть подготовиться */}
+      {splashFinished && (hasError ? <Error /> : <RootLayoutNav />)}
+
+      {/* Видео-сплэш поверх контента, сам плавно исчезает */}
+      {!splashFinished && (
+        <VideoSplash
+          isAppReady={isAppReady}
+          onFinish={() => setSplashFinished(true)}
+        />
+      )}
+    </View>
+  );
 }
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts({
+  const [fontsLoaded] = useFonts({
     'Montserrat-Regular': require('../assets/fonts/Montserrat-Regular.ttf'),
-
     'BerlinType-Regular': require('../assets/fonts/BerlinType-Regular.otf'),
     'BerlinType-Bold': require('../assets/fonts/BerlinType-Bold.ttf'),
     'Montserrat-SemiBold': require('../assets/fonts/Montserrat-SemiBold.ttf'),
     'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
     "Manrope": require('../assets/fonts/manrope.ttf'),
+  });
 
-  })
-  const [appIsReady, setAppIsReady] = useState(true)
-
-  const isReady = appIsReady && fontsLoaded;
-
-  useEffect(() => {
-    if (isReady) {
-      SplashScreen.hideAsync()
-    }
-  }, [isReady])
-
-  /*  if (!appIsReady || !fontsLoaded) {
-     return (
-       <VideoSplash
-         onReady={() => {
-           setAppIsReady(true);
-         }}
-       />
-     );
-   }
-  */
-
-  return/*  !appIsReady ? <VideoSplash onReady={() => setAppIsReady(true)} /> : */ (
+  return (
     <ApiProvider>
       <LanguageProvider>
         <ThemeProvider>
-          <RootLayoutNav />
+          <Gate fontsLoaded={fontsLoaded} />
         </ThemeProvider>
       </LanguageProvider>
     </ApiProvider>
-
-  )
+  );
 }
