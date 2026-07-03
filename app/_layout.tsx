@@ -49,7 +49,6 @@ function Gate({ fontsLoaded }: { fontsLoaded: boolean }) {
       {/* Основной контент монтируется под сплэшем, чтобы успеть подготовиться */}
       {splashFinished && (hasError ? <Error /> : <RootLayoutNav />)}
 
-      {/* Видео-сплэш поверх контента, сам плавно исчезает */}
       {!splashFinished && (
         <VideoSplash
           isAppReady={isAppReady}

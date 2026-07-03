@@ -1,12 +1,11 @@
 import { VideoView, useVideoPlayer } from 'expo-video';
-import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, Vibration } from 'react-native';
 
-const SPLASH_VIDEO = 'https://pivaldi.online/public/splash.mp4';
-const MIN_DURATION = 5000; 
-const MAX_DURATION = 12000; 
-const FADE_DURATION = 400; 
+const SPLASH_VIDEO = require('../assets/splash.mp4');
+const MIN_DURATION = 5000;
+const MAX_DURATION = 12000;
+const FADE_DURATION = 400;
 
 type VideoSplashProps = {
     isAppReady: boolean;
@@ -21,58 +20,23 @@ export default function VideoSplash({ isAppReady, onFinish }: VideoSplashProps) 
     const hapticsStartedRef = useRef(false);
 
     const player = useVideoPlayer(SPLASH_VIDEO, (player) => {
-        player.loop = false; 
+        player.loop = false;
         player.muted = true;
         player.play();
     });
 
-
    
     const startHaptics = (): (() => void) => {
-        const VIBRATION_DURATION = 5000; 
-        const PHASE_1_END = 1800;        
-        const PHASE_2_END = 2800;        
+        const TOTAL_DURATION = 2000; // длительность непрерывной вибрации, мс
 
-        let timer: ReturnType<typeof setTimeout> | null = null;
-        const startedAt = Date.now();
-
-        const fire = (style: Haptics.ImpactFeedbackStyle) => {
-            Haptics.impactAsync(style).catch(() => { });
-        };
-
-        const tick = () => {
-            const elapsed = Date.now() - startedAt;
-            if (elapsed >= VIBRATION_DURATION) return;
-
-            let style: Haptics.ImpactFeedbackStyle;
-            let nextDelay: number;
-
-            if (elapsed < PHASE_1_END) {
-                // сильно и часто
-                style = Haptics.ImpactFeedbackStyle.Heavy;
-                nextDelay = 45;
-            } else if (elapsed < PHASE_2_END) {
-                // тише и реже
-                style = Haptics.ImpactFeedbackStyle.Light;
-                nextDelay = 90;
-            } else {
-                // снова сильно и часто
-                style = Haptics.ImpactFeedbackStyle.Heavy;
-                nextDelay = 45;
-            }
-
-            fire(style);
-            timer = setTimeout(tick, nextDelay);
-        };
-
-        tick();
+        Vibration.vibrate(TOTAL_DURATION);
 
         return () => {
-            if (timer) clearTimeout(timer);
+            Vibration.cancel();
         };
     };
 
-    // Запускаем вибрацию ровно в момент, когда видео фактически начало играть.
+
     useEffect(() => {
         let stopHaptics: (() => void) | null = null;
 
@@ -96,7 +60,7 @@ export default function VideoSplash({ isAppReady, onFinish }: VideoSplashProps) 
         return () => sub.remove();
     }, [player]);
 
-    
+
     useEffect(() => {
         const minTimer = setTimeout(() => setMinTimeElapsed(true), MIN_DURATION);
         const maxTimer = setTimeout(() => setVideoDone(true), MAX_DURATION);

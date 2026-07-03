@@ -17,3 +17,8 @@ declare module "*.jpeg" {
     const content: import("react-native").ImageSourcePropType;
     export default content;
 }
+
+declare module "*.mp4" {
+    const content: number;
+    export default content;
+}
