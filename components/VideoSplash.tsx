@@ -1,40 +1,102 @@
 import { VideoView, useVideoPlayer } from 'expo-video';
-import * as Haptics from 'expo-haptics';
+import * as ExpoHaptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, TurboModuleRegistry } from 'react-native';
 
 const SPLASH_VIDEO = require('../assets/splash.mp4');
-const MIN_DURATION = 5000;
-const MAX_DURATION = 12000;
+const MIN_DURATION = 3000;
+const MAX_DURATION = 3000;
 const FADE_DURATION = 400;
-const SOFT_BUZZ_DURATION = 5000;
-const SOFT_BUZZ_BURSTS = [
-    { pulses: 12, pulsePause: 28, gapAfter: 170 },
-    { pulses: 3, pulsePause: 46, gapAfter: 150 },
-    { pulses: 11, pulsePause: 30, gapAfter: 220 },
-];
+const SPLASH_HAPTIC_FILE = 'splash_haptic.ahap';
+const HAPTIC_DURATION = 3000;
+const HAPTIC_STEP = 100;
+const HAPTIC_MAX_INTENSITY = 0.65;
+const HAPTIC_SHARPNESS = 0.85;
+const HAPTIC_OPTIONS = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false,
+};
 
-const sleep = (duration: number) => new Promise((resolve) => setTimeout(resolve, duration));
+type HapticOptions = typeof HAPTIC_OPTIONS;
+type HapticEvent = {
+    time: number;
+    type?: 'transient' | 'continuous';
+    duration?: number;
+    intensity?: number;
+    sharpness?: number;
+};
 
-const playSoftBuzz = async (shouldStop: () => boolean) => {
-    const startedAt = Date.now();
-    let burstIndex = 0;
+const SPLASH_HAPTIC_FALLBACK: HapticEvent[] = Array.from(
+    { length: HAPTIC_DURATION / HAPTIC_STEP },
+    (_, index) => {
+        const time = index * HAPTIC_STEP;
+        const progress = time / HAPTIC_DURATION;
+        const fade = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
 
-    while (!shouldStop() && Date.now() - startedAt < SOFT_BUZZ_DURATION) {
-        const burst = SOFT_BUZZ_BURSTS[burstIndex % SOFT_BUZZ_BURSTS.length];
+        return {
+            time,
+            type: 'continuous',
+            duration: HAPTIC_STEP,
+            intensity: Math.max(0.05, HAPTIC_MAX_INTENSITY * fade),
+            sharpness: HAPTIC_SHARPNESS,
+        };
+    },
+);
 
-        for (let i = 0; i < burst.pulses; i++) {
-            if (shouldStop() || Date.now() - startedAt >= SOFT_BUZZ_DURATION) {
-                return;
-            }
+type NativeHaptics = {
+    stop: () => void;
+    triggerPattern: (events: HapticEvent[], options?: HapticOptions) => void;
+    playHaptic?: (fileName: string, fallback: HapticEvent[], options?: HapticOptions) => Promise<void>;
+};
 
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => { });
-            await sleep(burst.pulsePause + (i % 3) * 4);
-        }
+let nativeHaptics: NativeHaptics | null | undefined;
 
-        burstIndex += 1;
-        await sleep(burst.gapAfter);
+const hasNativeHapticsModule = () => {
+    try {
+        return Boolean(TurboModuleRegistry.get('RNHapticFeedback'));
+    } catch {
+        return false;
     }
+};
+
+const getNativeHaptics = async (): Promise<NativeHaptics | null> => {
+    if (nativeHaptics !== undefined) {
+        return nativeHaptics;
+    }
+
+    if (!hasNativeHapticsModule()) {
+        nativeHaptics = null;
+        return nativeHaptics;
+    }
+
+    try {
+        const module = await import('react-native-haptic-feedback') as {
+            default?: NativeHaptics;
+            playHaptic?: NativeHaptics['playHaptic'];
+            triggerPattern?: NativeHaptics['triggerPattern'];
+            stop?: NativeHaptics['stop'];
+        };
+        const defaultModule = module.default;
+
+        nativeHaptics = {
+            stop: module.stop ?? defaultModule?.stop ?? (() => { }),
+            triggerPattern: module.triggerPattern ?? defaultModule?.triggerPattern ?? (() => { }),
+            playHaptic: module.playHaptic,
+        };
+    } catch {
+        nativeHaptics = null;
+    }
+
+    return nativeHaptics;
+};
+
+const playExpoHaptic = async (intensity: number) => {
+    const style =
+        intensity > 0.5
+            ? ExpoHaptics.ImpactFeedbackStyle.Medium
+            : ExpoHaptics.ImpactFeedbackStyle.Light;
+
+    await ExpoHaptics.impactAsync(style).catch(() => { });
 };
 
 type VideoSplashProps = {
@@ -47,7 +109,6 @@ export default function VideoSplash({ isAppReady, onFinish }: VideoSplashProps) 
     const [minTimeElapsed, setMinTimeElapsed] = useState(false);
     const opacity = useRef(new Animated.Value(1)).current;
     const finishedRef = useRef(false);
-    const hapticsStartedRef = useRef(false);
 
     const player = useVideoPlayer(SPLASH_VIDEO, (player) => {
         player.loop = false;
@@ -55,41 +116,83 @@ export default function VideoSplash({ isAppReady, onFinish }: VideoSplashProps) 
         player.play();
     });
 
-   
-    const startHaptics = (): (() => void) => {
-        let isStopped = false;
-
-        void playSoftBuzz(() => isStopped);
-
-        return () => {
-            isStopped = true;
-        };
-    };
-
-
     useEffect(() => {
-        let stopHaptics: (() => void) | null = null;
+        let isHapticPlaying = false;
+        let expoHapticTimer: ReturnType<typeof setInterval> | null = null;
 
-        const sub = player.addListener('playingChange', ({ isPlaying }) => {
-            if (isPlaying && !hapticsStartedRef.current) {
-                hapticsStartedRef.current = true;
-                stopHaptics = startHaptics();
+        const startExpoHaptics = () => {
+            const startedAt = Date.now();
+            expoHapticTimer = setInterval(() => {
+                const elapsed = Date.now() - startedAt;
+                const progress = Math.min(elapsed / HAPTIC_DURATION, 1);
+                const fade = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
+
+                void playExpoHaptic(fade);
+
+                if (progress >= 1 && expoHapticTimer) {
+                    clearInterval(expoHapticTimer);
+                    expoHapticTimer = null;
+                }
+            }, HAPTIC_STEP);
+        };
+
+        const startHaptics = () => {
+            if (isHapticPlaying) return;
+
+            isHapticPlaying = true;
+
+            void getNativeHaptics().then((loadedHaptics) => {
+                if (!isHapticPlaying) return;
+
+                if (!loadedHaptics) {
+                    startExpoHaptics();
+                    return;
+                }
+
+                if (loadedHaptics.playHaptic) {
+                    void loadedHaptics.playHaptic(SPLASH_HAPTIC_FILE, SPLASH_HAPTIC_FALLBACK, HAPTIC_OPTIONS).catch(() => {
+                        if (isHapticPlaying) {
+                            loadedHaptics.triggerPattern(SPLASH_HAPTIC_FALLBACK, HAPTIC_OPTIONS);
+                        }
+                    });
+                    return;
+                }
+
+                loadedHaptics.triggerPattern(SPLASH_HAPTIC_FALLBACK, HAPTIC_OPTIONS);
+            });
+        };
+
+        const stopHaptics = () => {
+            if (!isHapticPlaying) return;
+
+            isHapticPlaying = false;
+            void getNativeHaptics().then((loadedHaptics) => loadedHaptics?.stop());
+
+            if (expoHapticTimer) {
+                clearInterval(expoHapticTimer);
+                expoHapticTimer = null;
+            }
+        };
+
+        const playingSub = player.addListener('playingChange', ({ isPlaying }) => {
+            if (isPlaying) {
+                startHaptics();
+            } else {
+                stopHaptics();
             }
         });
 
-        return () => {
-            sub.remove();
-            if (stopHaptics) stopHaptics();
-        };
-    }, [player]);
-
-    useEffect(() => {
-        const sub = player.addListener('playToEnd', () => {
+        const endSub = player.addListener('playToEnd', () => {
+            stopHaptics();
             setVideoDone(true);
         });
-        return () => sub.remove();
-    }, [player]);
 
+        return () => {
+            stopHaptics();
+            playingSub.remove();
+            endSub.remove();
+        };
+    }, [player]);
 
     useEffect(() => {
         const minTimer = setTimeout(() => setMinTimeElapsed(true), MIN_DURATION);
