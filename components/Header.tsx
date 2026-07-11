@@ -10,9 +10,9 @@ import { useTheme } from "@/contex/theme-context"
 
 const Header = () => {
     const router = useRouter()
-     const insets = useSafeAreaInsets();
+    const insets = useSafeAreaInsets();
     const { isDark, theme, toggleTheme } = useTheme();
-    
+
       
     return (
     <View className="w-full min-h-[70px] flex-row justify-between items-center px-5 z-10 bg-primary-comp" 
@@ -23,6 +23,7 @@ const Header = () => {
    >
 
         <StatusBar barStyle={isDark? 'light-content': "dark-content"} />
+       
         <Image 
             source={isDark ? img.logoHeaderLight : img.logoHeaderDark}  
             contentFit="contain" 
@@ -30,9 +31,9 @@ const Header = () => {
                 width: '35%', 
                 maxWidth: 180,
                 height: undefined,
-                aspectRatio: 4.33 // 130:30 = 4.33
+                aspectRatio: 2.5// 130:30 = 4.33
             }} 
-            onError={(e:any) => console.log('LOAD ERROR:', e.nativeEvent.error)}
+            onError={(e:any) => console.log('LOAD ERROR:', e)}
             onLoadEnd={()=> console.log('HEADER LOADED')} 
         />
     

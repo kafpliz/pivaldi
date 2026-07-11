@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
+import { AppState, Platform, View } from "react-native";
 import "./global.css";
 import { ThemeProvider, themeVars, useTheme } from "@/contex/theme-context";
 import { useFonts } from 'expo-font';
@@ -9,10 +9,19 @@ import VideoSplash from "@/components/VideoSplash";
 import { ApiProvider, useApi } from "@/contex/api.context";
 import Error from "./error";
 import { LanguageProvider } from "@/contex/language.context";
+import * as NavigationBar from 'expo-navigation-bar';
 
-// Не даём нативному сплэшу автоматически прятаться — прячем вручную,
-// как только смонтируется React и станет виден наш VideoSplash.
 SplashScreen.preventAutoHideAsync().catch(() => { });
+
+function hideAndroidNavigationBar() {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+
+  NavigationBar.setPositionAsync('absolute').catch(() => { });
+  NavigationBar.setBehaviorAsync('overlay-swipe').catch(() => { });
+  NavigationBar.setVisibilityAsync('hidden').catch(() => { });
+}
 
 function RootLayoutNav() {
   const { theme } = useTheme();
@@ -26,27 +35,29 @@ function RootLayoutNav() {
   );
 }
 
-/**
- * Gate решает, что показывать: видео-сплэш или основной контент.
- * Данные грузятся ApiProvider'ом СРАЗУ (во время сплэша),
- * поэтому сплэш скроется когда пройдёт минимум 3 сек И данные готовы.
- */
+
 function Gate({ fontsLoaded }: { fontsLoaded: boolean }) {
   const { isLoading, hasError, restaurants } = useApi();
   const [splashFinished, setSplashFinished] = useState(false);
 
-  // Прячем нативный сплэш, как только смонтировался React (виден VideoSplash)
+
   useEffect(() => {
     SplashScreen.hideAsync().catch(() => { });
+
   }, []);
 
-  // Приложение готово: шрифты загружены и данные пришли (или произошла ошибка)
+  useEffect(() => {
+    if (splashFinished) {
+      hideAndroidNavigationBar();
+    }
+  }, [splashFinished]);
+
+
   const isAppReady =
     fontsLoaded && !isLoading && (restaurants.length > 0 || hasError);
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Основной контент монтируется под сплэшем, чтобы успеть подготовиться */}
       {splashFinished && (hasError ? <Error /> : <RootLayoutNav />)}
 
       {!splashFinished && (
@@ -68,6 +79,18 @@ export default function RootLayout() {
     'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
     "Manrope": require('../assets/fonts/manrope.ttf'),
   });
+
+  useEffect(() => {
+    hideAndroidNavigationBar();
+
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        hideAndroidNavigationBar();
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   return (
     <ApiProvider>

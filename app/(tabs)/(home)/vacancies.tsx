@@ -212,6 +212,11 @@ const Vacancies = () => {
                     
                 }
             ])
+            setHasError(false)
+            setErrMessage('')
+            setName('')
+            setPhone('')
+            setSelectResto('')
            }
            
         }

@@ -1,6 +1,6 @@
+import logoHeaderDark from "@/assets/images/logo_header_dark.png";
+import logoHeaderLight from "@/assets/images/logo_header_light.png";
 
-import logoHeaderDark from "@/assets/images/logo_header_dark.svg";
-import logoHeaderLight from "@/assets/images/logo_header_light.svg";
 import bgBeer from "@/assets/images/bg-beer.svg";
 import bgBeer2 from "@/assets/images/bg-beer2.svg";
 import logo from "@/assets/images/logo.svg";

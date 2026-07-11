@@ -1,5 +1,5 @@
 declare module "*.svg" {
-    const content: import("react-native").ImageSourcePropType;
+    const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
     export default content;
 }
 

@@ -190,7 +190,7 @@ const Content = ({ data, activeId }: { data: ICategory[], activeId?: number }) =
                                         <StyledText fontFamily="m-bold" style={{
                                             fontSize: 13,
                                             fontWeight: 700
-                                        }} >{item.price}р</StyledText>
+                                        }} >{item.price} ₽</StyledText>
                                     </View>
                                 </View>
                                 }
