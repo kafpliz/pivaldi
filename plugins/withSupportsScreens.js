@@ -1,8 +1,10 @@
 const { withAndroidManifest } = require("@expo/config-plugins");
 
+
 module.exports = function withPhoneOnly(config) {
   return withAndroidManifest(config, (config) => {
     const androidManifest = config.modResults;
+
 
     androidManifest.manifest["supports-screens"] = {
       $: {
@@ -34,20 +36,13 @@ module.exports = function withPhoneOnly(config) {
       }
     };
 
-    
+
     addFeature("android.hardware.telephony", true);
-
-  
-    addFeature("android.software.leanback", false);
-
-  
-    addFeature("android.hardware.type.watch", false);
-
-  
-    addFeature("android.hardware.type.automotive", false);
 
 
     addFeature("android.hardware.touchscreen", true);
+
+
 
     return config;
   });

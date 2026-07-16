@@ -4,7 +4,7 @@ export default function UserStackLayout() {
     return (
         <Stack screenOptions={{
             headerShown: false,
-            animation: "flip",
+            animation: "none",
         }} >
             <Stack.Screen name="index" />
         </Stack>

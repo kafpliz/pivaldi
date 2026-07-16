@@ -11,7 +11,7 @@ export default function TabsLayout() {
 
       <Tabs screenOptions={{ headerShown: false }}
         tabBar={() => <TabBar />}>
-          <Tabs.Screen name="(home)"/>
+          <Tabs.Screen name="(home)"  />
             
       </Tabs>
     </View>

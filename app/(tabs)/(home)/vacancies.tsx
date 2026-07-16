@@ -4,7 +4,7 @@ import { Bar } from "@/components/utils"
 import { Alert, Modal, ScrollView, TextInput, TouchableOpacity, View } from "react-native"
 import MaskInput from 'react-native-mask-input';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useApi } from "@/contex/api.context"
 import { useLanguage } from "@/contex/language.context";
 import { transformRestoName } from "@/assets/utils/script"
@@ -13,15 +13,23 @@ import { IRes } from "@/assets/interfaces/context";
 import { useTheme } from "@/contex/theme-context";
 
 
-const Input = ({ title, type, onValidationChange }: { title: string, type: 'phone' | 'name', onValidationChange: (text: string) => void; }) => {
-    const [value, setValue] = useState('')
+const Input = ({
+    title,
+    type,
+    value,
+    onChangeText,
+}: {
+    title: string
+    type: 'phone' | 'name'
+    value: string
+    onChangeText: (text: string) => void
+}) => {
     const isPhone = type === 'phone'
-    const {isDark} = useTheme()
+    const { isDark } = useTheme()
     const phoneMask = [
         '+', '7', ' ', '(', /\d/, /\d/, /\d/, ')', ' ',
         /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/
     ]
-
 
     return (
         <View className="w-full">
@@ -31,12 +39,7 @@ const Input = ({ title, type, onValidationChange }: { title: string, type: 'phon
                     className="w-full h-14 bg-active/15 rounded-xl pl-5 pr-5 text-primary"
                     keyboardType="phone-pad"
                     value={value}
-                    onChangeText={(masked, unmasked) => {
-
-                        setValue(masked)
-                        onValidationChange(masked)
-
-                    }}
+                    onChangeText={(masked) => onChangeText(masked)}
                     mask={phoneMask}
                     placeholder="+7 (___) ___-__-__"
                     placeholderTextColor={isDark ? 'rgba(217, 211, 198, 1)' : 'rgba(67, 48, 20, 1)'}
@@ -46,10 +49,7 @@ const Input = ({ title, type, onValidationChange }: { title: string, type: 'phon
                     className="w-full h-14 bg-active/15 rounded-xl pl-5 pr-5 text-primary"
                     keyboardType="default"
                     value={value}
-                    onChangeText={(text) => {
-                        setValue(text)
-                        onValidationChange(text)
-                    }}
+                    onChangeText={onChangeText}
                 />
             )}
         </View>
@@ -57,25 +57,23 @@ const Input = ({ title, type, onValidationChange }: { title: string, type: 'phon
 }
 
 
-const Select = ({ onValidationChange }: { onValidationChange: (text: string) => void; }) => {
+const Select = ({
+    selectedRestoId,
+    onSelect,
+}: {
+    selectedRestoId?: number
+    onSelect: (id: number, label: string) => void
+}) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedResto, setSelectedResto] = useState<number>();
 
     const { restaurants } = useApi()
     const { t } = useLanguage()
 
-    const resto = restaurants
+    const selectedRestoItem = restaurants.find(item => item.id === selectedRestoId);
 
-    const selectedRestoItem = resto.find(item => item.id === selectedResto);
-
-    useEffect(() => {
-        if (selectedResto) {
-            const selectedLabel = selectedRestoItem ? transformRestoName(selectedRestoItem.name, selectedRestoItem.isFranchise) : t('vacancies.chooseRestaurant');
-            onValidationChange(selectedLabel)
-        }
-    }, [selectedResto])
-
-    const selectedLabel = selectedRestoItem ? transformRestoName(selectedRestoItem.name, selectedRestoItem.isFranchise) : t('vacancies.chooseRestaurant');
+    const selectedLabel = selectedRestoItem
+        ? transformRestoName(selectedRestoItem.name, selectedRestoItem.isFranchise)
+        : t('vacancies.chooseRestaurant');
     const boxShadow = '0px -4px 4px 0px rgba(0, 0, 0, 0.12)'
 
     return (
@@ -114,21 +112,24 @@ const Select = ({ onValidationChange }: { onValidationChange: (text: string) => 
                         </View>
 
                         <ScrollView>
-                            {resto.map((item, index) => (
+                            {restaurants.map((item) => (
                                 <TouchableOpacity
-                                    key={index}
+                                    key={item.id}
                                     className="bg-primary-modal"
                                     style={{
                                         padding: 16,
                                     }}
                                     onPress={() => {
-                                        setSelectedResto(item.id);
+                                        onSelect(
+                                            item.id,
+                                            transformRestoName(item.name, item.isFranchise),
+                                        );
                                         setModalVisible(false);
                                     }}
                                 >
-                                    <StyledText className="text-primary capitalize"  style={{
+                                    <StyledText className="text-primary capitalize" style={{
                                         fontSize: 20,
-                                        fontWeight: selectedResto == item.id ? 600 : 400,
+                                        fontWeight: selectedRestoId === item.id ? 600 : 400,
                                         textTransform: 'capitalize'
                                     }}>
                                         {transformRestoName(item.name, item.isFranchise)}
@@ -157,11 +158,22 @@ const Header = () => {
 const Vacancies = () => {
     const { t } = useLanguage()
     const [selectResto, setSelectResto] = useState('')
+    const [selectedRestoId, setSelectedRestoId] = useState<number | undefined>()
     const [phone, setPhone] = useState('')
     const [name, setName] = useState('')
     const [hasError, setHasError] = useState(false)
     const [errMessage, setErrMessage] = useState('')
     const [isSend, setIsSend] = useState(false)
+
+    const resetForm = () => {
+        setName('')
+        setPhone('')
+        setSelectResto('')
+        setSelectedRestoId(undefined)
+        setHasError(false)
+        setErrMessage('')
+    }
+
     const validateForm = () => {
 
         if (!selectResto || selectResto.length === 0) {
@@ -194,31 +206,31 @@ const Vacancies = () => {
 
 
     const send = async () => {
-        if (validateForm()) {
-            const obj = {
-                phone: phone,
-                name: name,
-                resto: selectResto,
-                type: 'hr',
+        if (!validateForm()) {
+            return
+        }
+
+        const obj = {
+            phone: phone,
+            name: name,
+            resto: selectResto,
+            type: 'hr',
+        }
+
+        setIsSend(true)
+        try {
+            const res = await apiClient.post<IRes>('email-sletter/hr', obj)
+            if (res.statusCode === 200) {
+                Alert.alert(t('common.sentTitle'), t('common.requestSent'), [
+                    {
+                        text: t('common.ok'),
+                        style: 'default',
+                        onPress: resetForm,
+                    },
+                ])
             }
-           setIsSend(true)
-           const res =  await apiClient.post<IRes>('email-sletter/hr', obj)
-           if (res.statusCode == 200) {
+        } finally {
             setIsSend(false)
-            Alert.alert(t('common.sentTitle'), t('common.requestSent'), [
-                {
-                    text: t('common.ok'),
-                    "style" : 'default',
-                    
-                }
-            ])
-            setHasError(false)
-            setErrMessage('')
-            setName('')
-            setPhone('')
-            setSelectResto('')
-           }
-           
         }
     }
 
@@ -232,12 +244,28 @@ const Vacancies = () => {
                         <Header />
 
                         <View className="w-full gap-4">
-                            <Input title={t('vacancies.name')} type="name" onValidationChange={(text) => setName(text)} />
-                            <Input title={t('vacancies.phone')} type="phone" onValidationChange={(text) => setPhone(text)} />
-                            <Select onValidationChange={(text) => setSelectResto(text)} />
+                            <Input
+                                title={t('vacancies.name')}
+                                type="name"
+                                value={name}
+                                onChangeText={setName}
+                            />
+                            <Input
+                                title={t('vacancies.phone')}
+                                type="phone"
+                                value={phone}
+                                onChangeText={setPhone}
+                            />
+                            <Select
+                                selectedRestoId={selectedRestoId}
+                                onSelect={(id, label) => {
+                                    setSelectedRestoId(id)
+                                    setSelectResto(label)
+                                }}
+                            />
                             {hasError && <StyledText className="text-red-600" style={{
                                 fontSize: 14,
-                              
+
                             }} >{errMessage}</StyledText>}
                         </View>
 
