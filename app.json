@@ -2,7 +2,7 @@
   "expo": {
     "name": "PIVALDI",
     "slug": "pivaldi",
-    "version": "1.0.5",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "pivaldi",
@@ -12,7 +12,12 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.pivaldi.kafpliz",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": [
+          "en",
+          "ru"
+        ]
       }
     },
     "android": {
@@ -45,11 +50,11 @@
           "icon": "./assets/images/push_icon.png"
         }
       ],
-       [
+      [
         "expo-navigation-bar",
         {
-         "visibility": "hidden",
-    "behavior": "overlay-swipe"
+          "visibility": "hidden",
+          "behavior": "overlay-swipe"
         }
       ],
       "./plugins/with-ios-haptics",

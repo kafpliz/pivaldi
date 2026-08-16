@@ -58,7 +58,7 @@ function Gate({ fontsLoaded }: { fontsLoaded: boolean }) {
 
   return (
     <View style={{ flex: 1 }}>
-    
+  
       {splashFinished && (hasError ? <Error /> : <RootLayoutNav />)}
 
       {!splashFinished && (

@@ -64,7 +64,7 @@ const AfficheItem = ({ data }: { data: IAffiche }) => {
                 type={'simple'} 
                 style={{ width: '100%', aspectRatio: 16 / 9 }} 
             />
-            <View className="w-full min-h-12 bg-affiche-bar pt-1 pb-1 pl-2 pr-2 justify-center items-center">
+            <View className="w-full min-h-12 flex-1 bg-affiche-bar pt-1 pb-1 pl-2 pr-2 justify-center items-center">
                 <StyledText 
                     className="text-affiche-text" 
                     fontFamily={'m-semibold'} 

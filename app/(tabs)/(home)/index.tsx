@@ -4,6 +4,7 @@ import StyledText from "@/components/StyledText";
 import { SwiperComp } from "@/components/swiper";
 import { useApi } from "@/contex/api.context";
 import { useLanguage } from "@/contex/language.context";
+import { useTheme } from "@/contex/theme-context";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ScrollView, TouchableOpacity, View } from "react-native";
@@ -54,6 +55,8 @@ export default function Index() {
   const { swiper } = useApi()
   const boxShadow = '6px 6px 18px -3px rgba(0, 0, 0, 0.47), inset 16px 15px 21px -3px rgba(255, 250, 239, 0.5)'
 
+  const {isDark} = useTheme()
+
   const handleMenu = (id: number) => {
     router.push({
       pathname: '/(tabs)/(home)/menu/menu',
@@ -89,8 +92,8 @@ export default function Index() {
           <Block first={t('home.deliveryPickup')} second={t('home.threeDTours')} onPress={() => router.push('/(tabs)/(home)/delivery/deliveryList')} onPressSecond={() => router.push('/(tabs)/(home)/tour/tourList')}
             first_bg="bg-home-block-2" second_bg="bg-home-block-1" />
 
-          <TouchableOpacity className="w-full h-[50px] bg-white rounded-xl  justify-center items-center" style={{ boxShadow }} onPress={() => router.push('/(tabs)/(home)/franchise')}>
-            <StyledText  style={{ fontSize: 20,  }} className="text-home-btns text-center">{t('home.franchising')}</StyledText>
+          <TouchableOpacity className="w-full h-[50px] bg-white rounded-xl  justify-center items-center" style={{ boxShadow: isDark ? undefined: boxShadow, backgroundColor: isDark ? '#743045': 'white',  }} onPress={() => router.push('/(tabs)/(home)/franchise')}>
+            <StyledText  style={{ fontSize: 20, color: isDark ? 'white' : undefined  }} className="text-home-btns text-center">{t('home.franchising')}</StyledText>
           </TouchableOpacity>
 
           <Links />

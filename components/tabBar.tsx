@@ -24,7 +24,8 @@ export const TabBar = () => {
  
     const isActive = (tab: TabBarItem) => {
         const currentPath = segments.join('/')
-       
+        
+
         
         if (tab.name === 'home') {
             return currentPath === '' ||
@@ -42,13 +43,25 @@ export const TabBar = () => {
         }
 
     }
+       const handlePress = (tab: TabBarItem) => {
+             const currentPath = segments.join('/')
+        console.log(isActive(tab) ,currentPath, currentPath.length == 2);
+             
+        if (isActive(tab) && (currentPath == "(tabs)/(home)" || currentPath == "(tabs)/(settings)"  || currentPath == "(tabs)/notification" )) {
+   
+            return
+        }
+        
+    
+        router.push(tab.route as any)
+    }
 
     return (
         <View className="flex-row bg-primary-comp h-[70px]"  style={{
                 boxShadow: `0px -4px 4px 0px rgba(0, 0, 0, 0.09)`
             }}>
             {tabs.map((tab) => (
-                <Pressable key={tab.name} onPress={() => router.push(tab.route as any)} className={["flex-1 justify-center items-center", 
+                <Pressable key={tab.name} onPress={()=> handlePress(tab)} className={["flex-1 justify-center items-center", 
                 `${isActive(tab) ? 'bg-tab-active' : ''}`].join(' ')} accessibilityLabel={tab.label}>
                     <Image source={isActive(tab) ? tab.tabActive : tab.icon}  style={{width: 27, aspectRatio: 1 / 1 }} contentFit="contain" />
 
